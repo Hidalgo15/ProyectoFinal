@@ -1,0 +1,115 @@
+﻿@page "/"
+@page "/Login"
+@rendermode InteractiveServer
+@inject IJSRuntime JSx
+@inject ContextoDige Cd
+@using Microsoft.EntityFrameworkCore
+@inject NavigationManager NavMan
+<div class="hola">
+<h2 class="text-center">Inicio sesión DIGESSET</h2>
+<img src="https://vigilanteinformativo.com/subidas/2020/12/digesett_logo.jpg" alt="">
+
+<div class="formulario">
+    <EditForm Model="login" OnValidSubmit="ValidarUsuario">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group mb-3">
+    <label for="Cedula">Cédula:</label>
+    <InputText id="Cedula" class="form-control" @bind-Value="login.Cedula" />
+</div>
+
+
+        <div class="form-group mb-3">
+            <label for="Clave">Clave:</label>
+            <InputText id="Clave" class="form-control" @bind-Value="login.Clave" type="password" />
+        </div>
+
+        <div>
+            <button id="btnsesion" type="submit">Iniciar sesión</button>
+        </div>
+    </EditForm>
+</div>
+
+@if (mostrarModal)
+{
+    <div class="modal" tabindex="-1" role="dialog" style="display: block;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Error</h5>
+                    <button type="button" class="close" @onclick="CerrarModal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>@mensajeError</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" @onclick="CerrarModal">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+</div>
+
+<div>
+    <button class="btn btn-primary"@onclick ="Registro">Registrar nuevo usuario</button>
+</div>
+
+@code {
+    private LoginModel login = new LoginModel();
+    private bool mostrarModal = false;
+    private string mensajeError = string.Empty;
+
+    private async Task ValidarUsuario()
+{
+    UsuarioSession.GetInstance().LimpiarSesion();
+
+    var usuario = await Cd.Usuarios
+        .FirstOrDefaultAsync(u => u.Cedula == login.Cedula && u.Clave == login.Clave);
+
+    if (usuario != null)
+    {
+        UsuarioSession.GetInstance().SetUsuario(usuario);
+
+        switch (usuario.Tipo)
+        {
+            case TipoUsuario.Agente:
+                NavMan.NavigateTo("/Agente");
+                break;
+
+            case TipoUsuario.PersonalOficina:
+                NavMan.NavigateTo("/Oficina central");
+                break;
+
+            case TipoUsuario.Administrador:
+                NavMan.NavigateTo("/Administrativo");
+                break;
+
+            default:
+                mensajeError = "Tipo de usuario no reconocido.";
+                mostrarModal = true;
+                break;
+        }
+    }
+    else
+    {
+        mensajeError = "Cédula o clave incorrectos.";
+        mostrarModal = true;
+    }
+}
+
+private async Task Registro ()
+{
+NavMan.NavigateTo("/RegistrarUsuario1");
+StateHasChanged();
+}
+
+    private void CerrarModal()
+    {
+        mostrarModal = false;
+    }
+}

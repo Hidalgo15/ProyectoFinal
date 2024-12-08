@@ -1,0 +1,214 @@
+@page "/Oficina central/Gestion Agentes/Añadir"
+@page "/Oficina central/Gestion Agentes/Editar/{UsuarioCedula}"
+@layout LayoutMod3
+@rendermode InteractiveServer
+@inject ContextoDige Cd
+@inject NavigationManager NavMan
+
+
+<h2>@TituloPagina</h2>
+
+<div class="container">
+    <EditForm Model="nuevoUsuario" OnValidSubmit="GuardarUsuario">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="form-group mb-3">
+            <label for="Cedula">Cédula:</label>
+            <InputText id="Cedula" class="form-control" @bind-Value="nuevoUsuario.Cedula" disabled="@EsEdicion" />
+        </div>
+        <div class="form-group mb-3">
+            <label for="Clave">Clave:</label>
+            <InputText id="Clave" type="password" class="form-control" @bind-Value="nuevoUsuario.Clave" />
+        </div>
+
+        <div class="form-group">
+            <label for="tipo">Tipo de Usuario</label>
+            <InputSelect id="tipo" class="form-control" @bind-Value="nuevoUsuario.Tipo">
+                <option value="Agente">Agente</option>
+            </InputSelect>
+        </div>
+
+        <button class="btn btn-primary" type="submit">@BotonTexto</button>
+        <button class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
+    </EditForm>
+</div>
+
+@code {
+    private Usuario nuevoUsuario = new Usuario();
+    private string TituloPagina = "Añadir Usuario";
+    private string BotonTexto = "Guardar";
+
+    private bool EsEdicion => !string.IsNullOrEmpty(UsuarioCedula);
+
+    // Parámetro que captura la cédula del usuario en el caso de la edición
+    [Parameter]
+    public string UsuarioCedula { get; set; }
+
+    protected override async Task OnInitializedAsync()
+{
+    var sesion = UsuarioSession.GetInstance();
+
+    // Validar si hay un usuario en sesión
+    if (sesion.UsuarioActual == null)
+    {
+        NavMan.NavigateTo("/Login");
+        return;
+    }
+
+   
+
+    // Si estamos en modo edición, cargamos el usuario correspondiente
+    if (EsEdicion)
+    {
+        TituloPagina = "Editar Usuario";
+        BotonTexto = "Actualizar";
+        nuevoUsuario = await Cd.Usuarios.FindAsync(UsuarioCedula);
+
+        if (nuevoUsuario == null)
+        {
+            // Si no encontramos el usuario, redirigimos
+            NavMan.NavigateTo("/Oficina central");
+        }
+    }
+    else
+    {
+        // Si estamos en modo añadir, inicializamos un nuevo objeto
+        nuevoUsuario = new Usuario();
+    }
+}
+
+    private async Task GuardarUsuario()
+    {
+        // Verificamos si la cédula está vacía en el modo "Añadir"
+        if (string.IsNullOrEmpty(nuevoUsuario.Cedula) && !EsEdicion)
+        {
+            // Si no se ha ingresado la cédula, no guardamos nada
+            return;
+        }
+
+        // Si estamos en modo edición, actualizamos el usuario
+        if (EsEdicion)
+        {
+            Cd.Usuarios.Update(nuevoUsuario);
+        }
+        else
+        {
+            // Añadimos el nuevo usuario
+            Cd.Usuarios.Add(nuevoUsuario);
+        }
+
+        await Cd.SaveChangesAsync();
+        NavMan.NavigateTo("/Oficina central");
+    }
+
+    private void Cancelar()
+    {
+        // Al presionar Cancelar, redirigimos sin hacer nada
+        NavMan.NavigateTo("/Oficina central");
+    }
+}
+
+<style>
+    /* Fondo de la página */
+body {
+    background: url('https://presidencia.gob.do/sites/default/files/styles/large/public/news/2024-03/IMG_3300.jpg?itok=FWknYs5_') no-repeat center center;
+    background-size: cover;
+    color: #fff;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Título de la página */
+h2 {
+    color: #000000;
+    text-align: center;
+    margin: 40px 0;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+    font-weight: bold;
+}
+
+/* Contenedor principal */
+.container {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    margin-top: 20px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Formularios */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    font-weight: bold;
+    color: #00549d;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+input.form-control,
+select.form-control {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 1rem;
+}
+
+input.form-control:focus,
+select.form-control:focus {
+    outline: none;
+    border-color: #00549d;
+    box-shadow: 0 0 5px rgba(0, 84, 157, 0.5);
+}
+
+/* Botones */
+.btn-primary {
+    background-color: #00549d;
+    border: none;
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    background-color: #003f7d;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border: none;
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+/* Validación */
+.validation-message {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+
+.validation-summary {
+    color: red;
+    font-size: 1rem;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+</style>

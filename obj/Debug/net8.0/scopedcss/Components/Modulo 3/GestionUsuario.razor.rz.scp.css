@@ -1,0 +1,100 @@
+/* General Reset */
+*[b-n112men04r] {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body background for Administrative pages */
+body[b-n112men04r] {
+    font-family: Arial, sans-serif;
+    background: url('https://presidencia.gob.do/sites/default/files/styles/large/public/news/2024-03/IMG_3300.jpg?itok=FWknYs5_') no-repeat center center;
+    background-size: cover; /* Ensures the image covers the entire page */
+    color: #002F6C; /* DIGESETT blue */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 20px;
+}
+
+/* Page title */
+h2[b-n112men04r] {
+    color: #FFFFFF; /* White for visibility */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Shadow for readability */
+    font-size: 2rem;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Form container */
+.container[b-n112men04r] {
+    background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white */
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 500px;
+    text-align: left;
+}
+
+/* Form group */
+.form-group[b-n112men04r] {
+    margin-bottom: 1.5rem;
+}
+
+/* Labels */
+label[b-n112men04r] {
+    font-weight: bold;
+    color: #002F6C; /* DIGESETT blue */
+}
+
+/* Input styles */
+.form-control[b-n112men04r] {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid #C2D6E8; /* Light blue-gray */
+    border-radius: 5px;
+    margin-top: 5px;
+    transition: border-color 0.3s;
+}
+
+.form-control:focus[b-n112men04r] {
+    border-color: #00508B; /* Darker DIGESETT blue */
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 80, 139, 0.5); /* Light blue shadow */
+}
+
+/* Submit and cancel buttons */
+button[b-n112men04r] {
+    font-size: 1rem;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    margin-right: 10px;
+}
+
+/* Primary button */
+.btn-primary[b-n112men04r] {
+    background-color: #002F6C; /* DIGESETT blue */
+    color: white;
+}
+
+.btn-primary:hover[b-n112men04r] {
+    background-color: #00508B; /* Darker DIGESETT blue */
+    transform: scale(1.02); /* Slight scaling effect */
+}
+
+/* Secondary button */
+.btn-secondary[b-n112men04r] {
+    background-color: #CCCCCC; /* Light gray */
+    color: #333333; /* Dark gray */
+}
+
+.btn-secondary:hover[b-n112men04r] {
+    background-color: #AAAAAA; /* Darker gray */
+    transform: scale(1.02); /* Slight scaling effect */
+}

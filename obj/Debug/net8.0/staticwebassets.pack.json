@@ -1,0 +1,53 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Programacion web, trabajos\\CodigoProyectoFinal\\final\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\ProjectoFinal.bundle.scp.css",
+      "PackagePath": "staticwebassets\\ProjectoFinal.bundle.scp.css"
+    },
+    {
+      "Id": "C:\\Programacion web, trabajos\\CodigoProyectoFinal\\final\\wwwroot\\FotoIntegrante\\Eliezer.jpg",
+      "PackagePath": "staticwebassets\\FotoIntegrante\\Eliezer.jpg"
+    },
+    {
+      "Id": "C:\\Programacion web, trabajos\\CodigoProyectoFinal\\final\\wwwroot\\FotoIntegrante\\Emmanuel.jpg",
+      "PackagePath": "staticwebassets\\FotoIntegrante\\Emmanuel.jpg"
+    },
+    {
+      "Id": "C:\\Programacion web, trabajos\\CodigoProyectoFinal\\final\\wwwroot\\FotoIntegrante\\Wikelson.jpg",
+      "PackagePath": "staticwebassets\\FotoIntegrante\\Wikelson.jpg"
+    },
+    {
+      "Id": "C:\\Programacion web, trabajos\\CodigoProyectoFinal\\final\\wwwroot\\app.css",
+      "PackagePath": "staticwebassets\\app.css"
+    },
+    {
+      "Id": "C:\\Programacion web, trabajos\\CodigoProyectoFinal\\final\\wwwroot\\bootstrap\\bootstrap.min.css",
+      "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css"
+    },
+    {
+      "Id": "C:\\Programacion web, trabajos\\CodigoProyectoFinal\\final\\wwwroot\\bootstrap\\bootstrap.min.css.map",
+      "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css.map"
+    },
+    {
+      "Id": "C:\\Programacion web, trabajos\\CodigoProyectoFinal\\final\\wwwroot\\favicon.png",
+      "PackagePath": "staticwebassets\\favicon.png"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.ProjectoFinal.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.ProjectoFinal.props",
+      "PackagePath": "build\\ProjectoFinal.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.ProjectoFinal.props",
+      "PackagePath": "buildMultiTargeting\\ProjectoFinal.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.ProjectoFinal.props",
+      "PackagePath": "buildTransitive\\ProjectoFinal.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

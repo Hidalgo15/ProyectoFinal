@@ -1,0 +1,237 @@
+@page "/Oficina Central/Editar/{MultaId:int}"
+@using Microsoft.EntityFrameworkCore
+@layout LayoutMod3
+@rendermode InteractiveServer
+@inject ContextoDige Cd
+@inject NavigationManager NavMan
+
+
+<h2>@TituloPagina</h2>
+
+<div class="container">
+    <EditForm Model="nuevaMulta" OnValidSubmit="GuardarMulta">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group mb-3">
+            <label for="Nombre">Nombre:</label>
+            <InputText id="Nombre" class="form-control" @bind-Value="nuevaMulta.Nombre" />
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="Descripcion">Descripción:</label>
+            <InputText id="Descripcion" class="form-control" @bind-Value="nuevaMulta.Descripción" />
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="Latitud">Latitud:</label>
+            <InputNumber id="Latitud" class="form-control" @bind-Value="nuevaMulta.Latitud" />
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="Longitud">Longitud:</label>
+            <InputNumber id="Longitud" class="form-control" @bind-Value="nuevaMulta.Longitud" />
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="Foto">Foto:</label>
+            <InputText id="Foto" class="form-control" @bind-Value="nuevaMulta.Foto" />
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="Fecha">Fecha:</label>
+            <InputDate id="Fecha" class="form-control" @bind-Value="nuevaMulta.Fecha" />
+        </div>
+
+
+        <div class="form-group mb-3">
+    <label for="ConceptoId">Concepto:</label>
+    <InputSelect id="ConceptoId" class="form-control" @bind-Value="nuevaMulta.ConceptoId">
+        @foreach (var concepto in conceptos)
+        {
+            <option value="@concepto.Id">@concepto.Nombre</option>
+        }
+    </InputSelect>
+</div>
+
+<div class="form-group mb-3">
+    <label for="Estado">Estado:</label>
+    <InputSelect id="Estado" class="form-control" @bind-Value="nuevaMulta.Estado">
+        @foreach (var estado in Enum.GetValues(typeof(Estado)))
+        {
+            <option value="@estado">@estado</option>
+        }
+    </InputSelect>
+</div>
+        <button class="btn btn-primary" type="submit">@BotonTexto</button>
+        <button class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
+    </EditForm>
+</div>
+
+@code {
+    private Multa nuevaMulta = new Multa();
+    private string TituloPagina = "Añadir Multa";
+    private string BotonTexto = "Guardar";
+    private Usuario usuarioActual;
+
+    private bool EsEdicion => MultaId.HasValue;
+    private List<Conceptos> conceptos = new List<Conceptos>(); // Lista de conceptos
+
+    [Parameter]
+    public int? MultaId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+{
+    // Verificar usuario en sesión
+    usuarioActual = UsuarioSession.GetInstance().UsuarioActual;
+
+    if (usuarioActual == null)
+    {
+        NavMan.NavigateTo("/Login"); // Redirigir si no hay usuario
+        return;
+    }
+
+    // Obtener los conceptos registrados
+    conceptos = await Cd.Concepto.ToListAsync();
+
+    if (MultaId.HasValue)
+    {
+        // Si existe MultaId, cargar la multa para edición
+        nuevaMulta = await Cd.Multas.FindAsync(MultaId);
+
+        if (nuevaMulta == null)
+        {
+            NavMan.NavigateTo("/Oficina Central"); // Redirigir si no se encuentra la multa
+        }
+        else
+        {
+            TituloPagina = "Editar Multa";
+            BotonTexto = "Actualizar";
+        }
+    }
+    else
+    {
+        // Si no se proporciona MultaId, redirigir o mostrar un error
+        NavMan.NavigateTo("/Oficina Central");
+    }
+}
+
+
+    private async Task GuardarMulta()
+{
+    if (nuevaMulta != null)
+    {
+        Cd.Multas.Update(nuevaMulta);
+        await Cd.SaveChangesAsync();
+        NavMan.NavigateTo("/Oficina Central");
+    }
+    else
+    {
+        // Manejar el caso en el que no exista la multa
+        Console.WriteLine("Error: No se encontró la multa para actualizar.");
+    }
+}
+
+
+    private void Cancelar()
+    {
+        NavMan.NavigateTo("/Oficina Central");
+    }
+}
+
+<style>
+    /* Fondo general */
+body {
+    background: url('https://presidencia.gob.do/sites/default/files/styles/large/public/news/2024-03/IMG_3300.jpg?itok=FWknYs5_') no-repeat center center;
+    background-size: cover;
+    color: #fff;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Título de la página */
+h2 {
+    text-align: center;
+    font-size: 2rem;
+    color: #00549d;
+    margin-top: 20px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Contenedor del formulario */
+.container {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    padding: 20px 30px;
+    max-width: 600px;
+    margin: 30px auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Formularios */
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    font-weight: bold;
+    color: #00549d;
+    margin-bottom: 5px;
+    display: block;
+}
+
+input.form-control,
+select.form-control {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+input.form-control:focus,
+select.form-control:focus {
+    border-color: #00549d;
+    box-shadow: 0 0 5px rgba(0, 84, 157, 0.5);
+}
+
+/* Botones */
+button.btn-primary {
+    background-color: #00549d;
+    border: none;
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 5px;
+    margin-right: 10px;
+    transition: background-color 0.3s ease;
+}
+
+button.btn-primary:hover {
+    background-color: #003f7d;
+}
+
+button.btn-secondary {
+    background-color: #6c757d;
+    border: none;
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+button.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+/* Validaciones */
+.validation-message {
+    color: red;
+    font-size: 0.85rem;
+    margin-top: 5px;
+}
+
+
+
+</style>

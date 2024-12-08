@@ -1,0 +1,21 @@
+@page "/{Cedula}/Oficina Central"
+@rendermode InteractiveServer
+@layout LayoutMod2
+@inject IJSRuntime JSx
+@inject ContextoDige Cd
+@using Microsoft.EntityFrameworkCore
+@inject NavigationManager NavMan
+
+
+<p>Hola Personal de Oficina, tu cédula es: @Cedula</p>
+
+@code {
+    [Parameter] public string Cedula { get; set; } = "";
+ 
+    protected override async Task OnInitializedAsync()
+    {
+        
+        var usuario = await Cd.Usuarios.FirstOrDefaultAsync(u => u.Cedula == Cedula);
+           
+    }
+}

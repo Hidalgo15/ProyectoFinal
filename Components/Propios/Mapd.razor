@@ -1,0 +1,82 @@
+@using Microsoft.EntityFrameworkCore
+@rendermode InteractiveServer
+
+@inject IJSRuntime JSx
+@inject ContextoDige Cd
+@code {
+    [Parameter] public List<Multa> Multas { get; set; } = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // Filtrar y cargar los marcadores cada vez que cambien las multas recibidas
+        var paramx = Newtonsoft.Json.JsonConvert.SerializeObject(Multas);
+        await JSx.InvokeVoidAsync("CargarMarcadores", paramx);
+    }
+}
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<style>
+    html,
+    body {
+        height: 100%;
+        margin: 0;
+    }
+
+    .leaflet-container {
+        height: 400px;
+        width: 100%;
+        max-width: 100%;
+        max-height: 100%;
+    }
+</style>
+
+<div id="map" style="width: 100%; height: 400px;"></div>
+
+<script>
+    var mapa = null;
+
+    CargarMapa = function () {
+        mapa = L.map('map').setView([18.608288416826742, -70.2537288419647], 8);
+
+        const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(mapa);
+    };
+
+    function CargarMarcadores(multas) {
+        if (!mapa) {
+            console.error("El mapa no se ha cargado correctamente.");
+            return;
+        }
+
+        // Limpiar marcadores anteriores
+        mapa.eachLayer((layer) => {
+            if (layer instanceof L.Marker) {
+                mapa.removeLayer(layer);
+            }
+        });
+
+        multas = JSON.parse(multas);
+        for (let x = 0; x < multas.length; x++) {
+            let multa = multas[x];
+
+            // Convertir las coordenadas a números
+            let latitud = parseFloat(multa.Latitud);
+            let longitud = parseFloat(multa.Longitud);
+
+            // Verificar que las coordenadas sean válidas antes de añadir el marcador
+            if (!isNaN(latitud) && !isNaN(longitud)) {
+                // Crear el marcador en el mapa
+                let marker = L.marker([latitud, longitud]).addTo(mapa);
+
+                // Asociar el popup al marcador con el nombre de la multa
+                marker.bindPopup(multa.Nombre + '<br>Descripción: ' + multa.Descripción + '<br>Fecha: ' + new Date(multa.Fecha).toLocaleDateString());
+            }
+        }
+    }
+</script>

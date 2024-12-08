@@ -1,0 +1,349 @@
+@page "/Oficina central"
+@rendermode InteractiveServer
+@layout LayoutMod1
+@inject IJSRuntime JSx
+@inject ContextoDige Cd
+@using Microsoft.EntityFrameworkCore
+@inject NavigationManager NavMan
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/Oficina central">Oficina Central</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" style="color:black " href="/Oficina central/Gestion Agentes">Gestión Agentes</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" style="color:black " href="/Oficina central/Mapa">Mapa</a>
+                </li>
+                 <li class="nav-item">
+                    <a class="nav-link" style="color:black " href="/Oficina central/Ingresos">Ingresos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" style="color:black " href="/Login">Cerrar sesión</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="header-box mx-auto mt-5 p-3">
+    <h2 class="text-center">USUARIOS AGENTES</h2>
+</div>
+
+<style>
+    .header-box {
+        background-color: rgba(255, 255, 255, 0.9); /* Blanco semitransparente */
+        border-radius: 8px; /* Bordes redondeados */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+        max-width: 600px; /* Ancho máximo */
+    }
+
+    h2 {
+        color: #000; /* Color del texto */
+        margin: 0;
+    }
+</style>
+
+<div class="d-flex mb-3">
+    <input type="text" class="form-control me-2" placeholder="Buscar por nombre" @bind="nombreFiltro" />
+    <button class="btn btn-primary" @onclick="FiltrarMultas">Buscar</button>
+</div>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Concepto</th>
+            <th>Coordenadas</th>
+            <th>Fecha</th>
+            <th>Foto</th>
+            <th>Estado</th>
+            <th>Cédula Usuario</th> <!-- Mostrar la cédula del usuario que registró -->
+            <th>Acciones</th> 
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in MultasFiltradas)
+        {
+            <tr>
+                <td>@item.Nombre</td>
+                <td>@item.Descripción</td>
+                <td>@item.Concepto?.Nombre</td>
+                <td>@item.Latitud, @item.Longitud</td>
+                <td>@item.Fecha</td>
+                <td><img src="@item.Foto" alt="@item.Nombre" width="100" /></td>
+                <td>@item.Estado</td>
+                <td>@item.CedulaUsuario</td> <!-- Mostrar la cédula -->
+                <td>
+                    <button class="btn btn-primary" @onclick="() => EditarMulta(item.Id)">Editar</button>
+                    <button class="btn btn-danger" @onclick="() => ConfirmarEliminacion(item)">Eliminar</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@if (mostrarModalEliminar)
+{
+    <div class="modal" tabindex="-1" role="dialog" style="display: block;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmación de Eliminación</h5>
+                    <button type="button" class="close" @onclick="() => mostrarModalEliminar = false" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Está seguro de que desea eliminar esta multa?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="() => mostrarModalEliminar = false">Cancelar</button>
+                    <button type="button" class="btn btn-danger" @onclick="EliminarMultaSeleccionada">Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+
+
+@code {
+    private List<Multa> Multas = new List<Multa>();
+    private List<Multa> MultasFiltradas = new List<Multa>(); // Lista para mostrar las multas filtradas
+    private Multa multaSeleccionada;
+    private bool mostrarModalEliminar = false;
+    private string nombreFiltro = string.Empty; // Texto del filtro
+
+    protected override async Task OnInitializedAsync()
+    {
+        var usuarioActual = UsuarioSession.GetInstance().UsuarioActual;
+
+        if (usuarioActual == null)
+        {
+            NavMan.NavigateTo("/Login");
+            return;
+        }
+
+        Multas = await Cd.Multas.Include(m => m.Concepto).ToListAsync(); // Incluye la relación con el concepto
+        MultasFiltradas = Multas; // Inicialmente muestra todas las multas
+    }
+
+    private void FiltrarMultas()
+{
+    if (string.IsNullOrWhiteSpace(nombreFiltro))
+    {
+        MultasFiltradas = Multas; // Si el filtro está vacío, muestra todas las multas
+    }
+    else
+    {
+        MultasFiltradas = Multas
+            .Where(m => m.CedulaUsuario.Contains(nombreFiltro, StringComparison.OrdinalIgnoreCase)) // Filtra por cédula
+            .ToList(); 
+    }
+}
+
+
+    private void EditarMulta(int id)
+    {
+        NavMan.NavigateTo($"/Oficina central/Editar/{id}");
+    }
+
+    private void ConfirmarEliminacion(Multa multa)
+    {
+        multaSeleccionada = multa;
+        mostrarModalEliminar = true;
+    }
+
+    private async Task EliminarMultaSeleccionada()
+    {
+        if (multaSeleccionada != null)
+        {
+            Cd.Multas.Remove(multaSeleccionada);
+            await Cd.SaveChangesAsync();
+            Multas.Remove(multaSeleccionada);
+            FiltrarMultas(); // Actualiza la lista filtrada
+            multaSeleccionada = null;
+            mostrarModalEliminar = false;
+        }
+    }
+
+    private void Agregar()
+    {
+        NavMan.NavigateTo("/Oficina central/Añadir");
+    }
+}
+
+<style>
+    /* Fondo general */
+body {
+    background: url('https://presidencia.gob.do/sites/default/files/styles/large/public/news/2024-03/IMG_3300.jpg?itok=FWknYs5_') no-repeat center center;
+    background-size: cover;
+    color: #000000;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Barra de navegación */
+.navbar {
+    background-color: rgba(0, 84, 157, 0.9);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.navbar-brand {
+    color: #000000 !important;
+    font-weight: bold;
+}
+
+.navbar-nav .nav-link {
+    color: #000000 !important;
+    font-size: 1rem;
+    margin-right: 10px;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #ffcc00 !important;
+}
+
+/* Título */
+p strong {
+    font-size: 1.5rem;
+    color: #00549d;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+    text-align: center;
+    display: block;
+    margin: 20px 0;
+}
+
+/* Contenedor de búsqueda */
+.d-flex {
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+input.form-control {
+    width: 50%;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+input.form-control:focus {
+    border-color: #00549d;
+    box-shadow: 0 0 5px rgba(0, 84, 157, 0.5);
+}
+
+.btn-primary {
+    background-color: #00549d;
+    border: none;
+    padding: 10px 20px;
+    font-weight: bold;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #003f7d;
+}
+
+/* Tabla */
+.table {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.table th, 
+.table td {
+    text-align: center;
+    vertical-align: middle;
+    padding: 15px;
+}
+
+.table th {
+    background-color: #00549d;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.table td img {
+    border-radius: 5px;
+    max-width: 100px;
+    height: auto;
+}
+
+/* Botones de acciones */
+.btn-danger {
+    background-color: #d9534f;
+    border: none;
+    font-weight: bold;
+    padding: 5px 15px;
+    margin: 5px;
+    border-radius: 5px;
+}
+
+.btn-danger:hover {
+    background-color: #c9302c;
+}
+
+.btn-primary {
+    padding: 5px 15px;
+    font-weight: bold;
+}
+
+/* Modal */
+.modal {
+    background-color: rgba(0, 0, 0, 0.7);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1050;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-dialog {
+    max-width: 500px;
+}
+
+.modal-content {
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    background-color: #00549d;
+    color: #fff;
+    padding: 15px;
+}
+
+.modal-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.modal-footer .btn-secondary {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+.modal-footer .btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+</style>

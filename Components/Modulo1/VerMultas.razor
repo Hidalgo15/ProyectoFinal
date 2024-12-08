@@ -1,0 +1,190 @@
+@page "/Agente"
+@rendermode InteractiveServer
+@layout LayoutMod1
+@inject IJSRuntime JSx
+@inject ContextoDige Cd
+@using Microsoft.EntityFrameworkCore
+@inject NavigationManager NavMan
+
+<style>
+    body {
+        background-image: url('https://presidencia.gob.do/sites/default/files/styles/large/public/news/2024-03/IMG_3300.jpg?itok=FWknYs5_');
+        background-size: cover;
+        background-attachment: fixed;
+        background-position: center;
+        color: #fff;
+    }
+
+    .container, .navbar, .modal-content {
+        background-color: rgba(255, 255, 255, 0.8);
+        border-radius: 8px;
+        color: #000;
+    }
+
+    .navbar-brand, .nav-link {
+        color: #000 !important;
+    }
+
+    h2 {
+        color: #000000;
+    }
+</style>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/Agente">Agente</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/Agente/Mapa">Mapas de multas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/Agente/Comision">Comision</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/Login">Cerrar sesión</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="text-end me-3">
+    <buttom class="btn btn-primary" @onclick="Agregar">Agregar</buttom>
+</div>
+
+<div class="header-box mx-auto mt-5 p-3">
+    <h2 class="text-center">AGREGADOS</h2>
+</div>
+
+<style>
+    .header-box {
+        background-color: rgba(255, 255, 255, 0.9); /* Blanco semitransparente */
+        border-radius: 8px; /* Bordes redondeados */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+        max-width: 600px; /* Ancho máximo */
+    }
+
+    h2 {
+        color: #000; /* Color del texto */
+        margin: 0;
+    }
+</style>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Concepto</th>
+            <th>Coordenadas</th>
+            <th>Fecha</th>
+            <th>Foto</th>
+            <th>Acciones</th> <!-- Columna de acciones -->
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach(var item in Multas){
+            <tr>
+                <td>@item.Nombre</td>
+                <td>@item.Descripción</td>
+                <td>@item.Concepto?.Nombre</td>
+                <td>@item.Latitud, @item.Longitud</td>
+                <td>@item.Fecha</td>
+                <td><img src="@item.Foto" alt="@item.Nombre" width="100"/></td>
+                <td>
+                    <button class="btn btn-primary" @onclick="() => EditarMulta(item.Id)">Editar</button>
+                    <button class="btn btn-danger" @onclick="() => ConfirmarEliminacion(item)">Eliminar</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (mostrarModalEliminar)
+{
+    <div class="modal" tabindex="-1" role="dialog" style="display: block;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmación de Eliminación</h5>
+                    <button type="button" class="close" @onclick="() => mostrarModalEliminar = false" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Está seguro de que desea eliminar esta multa?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="() => mostrarModalEliminar = false">Cancelar</button>
+                    <button type="button" class="btn btn-danger" @onclick="EliminarMultaSeleccionada">Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+
+
+@code{
+    List<Multa> Multas = new List<Multa>();
+    private Multa multaSeleccionada;
+    private bool mostrarModalEliminar = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Obtener el usuario actual de la sesión
+        var usuarioActual = UsuarioSession.GetInstance().UsuarioActual;
+
+        if (usuarioActual == null)
+        {
+            // Redirigir al login si no hay usuario en sesión
+            NavMan.NavigateTo("/Login");
+            return;
+        }
+
+        // Cargar las multas del usuario en sesión con el concepto relacionado
+        Multas = await Cd.Multas
+            .Where(m => m.CedulaUsuario == usuarioActual.Cedula)
+            .Include(m => m.Concepto)  // Incluir el concepto relacionado
+            .ToListAsync();
+    }
+
+    private void EditarMulta(int id)
+    {
+        // Redirigir a la página de edición de la multa con el ID de la multa
+        NavMan.NavigateTo($"/Agente/Editar/{id}");
+    }
+
+    private void ConfirmarEliminacion(Multa multa)
+    {
+        multaSeleccionada = multa;
+        mostrarModalEliminar = true;
+    }
+
+    private async Task EliminarMultaSeleccionada()
+    {
+        if (multaSeleccionada != null)
+        {
+            // Eliminar la multa seleccionada
+            Cd.Multas.Remove(multaSeleccionada);
+            await Cd.SaveChangesAsync();
+
+            // Eliminarla de la lista local para actualizar la vista
+            Multas.Remove(multaSeleccionada);
+            multaSeleccionada = null;
+            mostrarModalEliminar = false;
+        }
+    }
+
+    private void Agregar()
+    {
+        NavMan.NavigateTo("/Agente/Añadir");
+    }
+}

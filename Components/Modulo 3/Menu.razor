@@ -1,0 +1,185 @@
+@page "/Administrativo"
+@layout LayoutMod3
+@rendermode InteractiveServer
+@inject ContextoDige Cd
+@inject NavigationManager NavMan
+@using Microsoft.EntityFrameworkCore;
+
+<style>
+    body {
+        background-image: url('https://presidencia.gob.do/sites/default/files/styles/large/public/news/2024-03/IMG_3300.jpg?itok=FWknYs5_');
+        background-size: cover;
+        background-attachment: fixed;
+        background-position: center;
+        color: #fff;
+    }
+
+    .container, .navbar, .modal-content {
+        background-color: rgba(255, 255, 255, 0.8);
+        border-radius: 8px;
+        color: #000;
+    }
+
+    .navbar-brand, .nav-link {
+        color: #000 !important;
+    }
+
+    h2 {
+        color: #000000;
+    }
+</style>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/Administrativo">Administrativo</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/Administrativo/ConceptosMultas">Conceptos de multas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/Login">Cerrar sesión</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="header-box mx-auto mt-5 p-3">
+    <h2 class="text-center">GESTIÓN DE USUARIOS</h2>
+</div>
+
+<style>
+    .header-box {
+        background-color: rgba(255, 255, 255, 0.9); /* Blanco semitransparente */
+        border-radius: 8px; /* Bordes redondeados */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+        max-width: 600px; /* Ancho máximo */
+    }
+
+    h2 {
+        color: #000; /* Color del texto */
+        margin: 0;
+    }
+</style>
+
+<div class="m-3 text-end">
+    <button class="btn btn-success" @onclick="IrAñadirUsuario">Añadir Usuario</button>
+</div>
+
+<div class="container">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Cédula</th>
+                <th>Clave</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var usuario in usuarios)
+            {
+                <tr>
+                    <td>@usuario.Cedula</td>
+                    <td>@usuario.Clave</td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="() => EditarUsuario(usuario.Cedula)">Editar</button>
+                        <button class="btn btn-danger" @onclick="() => ConfirmarEliminacion(usuario)">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@if (mostrarModalEliminar)
+{
+    <div class="modal" tabindex="-1" role="dialog" style="display: block;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmación de Eliminación</h5>
+                    <button type="button" class="close" @onclick="() => mostrarModalEliminar = false" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Está seguro de que desea eliminar este usuario?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="() => mostrarModalEliminar = false">Cancelar</button>
+                    <button type="button" class="btn btn-danger" @onclick="EliminarUsuarioSeleccionado">Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<Usuario> usuarios = new();
+    private Usuario usuarioSeleccionado;
+    private bool mostrarModalEliminar = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var sesion = UsuarioSession.GetInstance();
+
+        // Validar si hay un usuario en sesión
+        if (sesion.UsuarioActual == null)
+        {
+            NavMan.NavigateTo("/Login");
+            return;
+        }
+
+        // Verificar si el usuario tiene el tipo correcto
+        if (!sesion.EsTipoUsuario(TipoUsuario.Administrador))
+        {
+            NavMan.NavigateTo("/");
+            return;
+        }
+
+        // Cargar los usuarios para mostrar en el módulo
+        usuarios = await Cd.Usuarios
+            .Where(u => u.Tipo == TipoUsuario.PersonalOficina)
+            .ToListAsync();
+    }
+
+    private void IrAñadirUsuario()
+    {
+        NavMan.NavigateTo("/Administrativo/Añadir");
+    }
+
+    private void EditarUsuario(string cedula)
+    {
+        NavMan.NavigateTo($"/Administrativo/Editar/{cedula}");
+    }
+
+    private void ConfirmarEliminacion(Usuario usuario)
+    {
+        usuarioSeleccionado = usuario;
+        mostrarModalEliminar = true;
+    }
+
+    private async Task EliminarUsuarioSeleccionado()
+    {
+        if (usuarioSeleccionado != null)
+        {
+            Cd.Usuarios.Remove(usuarioSeleccionado);
+            await Cd.SaveChangesAsync();
+
+            usuarios.Remove(usuarioSeleccionado);
+            usuarioSeleccionado = null;
+            mostrarModalEliminar = false;
+        }
+    }
+
+    private void CerrarSesion()
+    {
+        UsuarioSession.GetInstance().LimpiarSesion();
+        NavMan.NavigateTo("/Login");
+    }
+}

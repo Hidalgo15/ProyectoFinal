@@ -1,0 +1,108 @@
+/* Fondo de la página */
+body[b-qmp2aevs69] {
+  background: url('https://presidencia.gob.do/sites/default/files/styles/large/public/news/2024-03/IMG_3300.jpg?itok=FWknYs5_') no-repeat center center;
+  background-size: cover;
+  color: #fff; /* Texto blanco para contraste */
+}
+
+/* Contenedor principal */
+.container[b-qmp2aevs69] {
+  background-color: rgba(255, 255, 255, 0.9); /* Fondo semitransparente */
+  border-radius: 10px;
+  padding: 30px;
+  margin-top: 20px;
+  max-width: 800px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Título de la página */
+h2[b-qmp2aevs69] {
+  color: #000000;
+  text-align: center;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7); /* Sombra para mayor contraste */
+  margin-bottom: 20px;
+}
+
+/* Estilos para el formulario */
+.form-group[b-qmp2aevs69] {
+  margin-bottom: 20px;
+}
+
+label[b-qmp2aevs69] {
+  font-size: 1.1rem;
+  color: #333;
+  font-weight: bold;
+}
+
+/* Estilo para los campos de entrada */
+.input-text[b-qmp2aevs69], .input-number[b-qmp2aevs69], .input-date[b-qmp2aevs69], .input-select[b-qmp2aevs69] {
+  background-color: #f4f4f4;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+  width: 100%;
+  font-size: 1rem;
+}
+
+/* Estilo para los botones */
+.btn-primary[b-qmp2aevs69] {
+  background-color: #004e24;
+  border: none;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-weight: bold;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.btn-primary:hover[b-qmp2aevs69] {
+  background-color: #003f7d;
+}
+
+.btn-secondary[b-qmp2aevs69] {
+  background-color: #6c757d;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-weight: bold;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.btn-secondary:hover[b-qmp2aevs69] {
+  background-color: #5a6268;
+}
+
+/* Estilos de los inputs */
+input:focus[b-qmp2aevs69], select:focus[b-qmp2aevs69] {
+  outline: none;
+  border-color: #00549d;
+}
+
+/* Estilo para la tabla si es que la tienes en el futuro */
+table[b-qmp2aevs69] {
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: collapse;
+}
+
+table th[b-qmp2aevs69] {
+  background-color: #00549d;
+  color: #fff;
+}
+
+table td[b-qmp2aevs69] {
+  color: #000;
+}
+
+table tbody tr:nth-child(even)[b-qmp2aevs69] {
+  background-color: #f2f2f2;
+}
+
+table tbody tr:hover[b-qmp2aevs69] {
+  background-color: #e0e0e0;
+}
+
+
+

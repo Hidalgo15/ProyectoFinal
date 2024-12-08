@@ -1,0 +1,148 @@
+/* Estilo general de la página */
+body {
+    font-family: Arial, sans-serif;
+    background: url('https://presidencia.gob.do/sites/default/files/styles/large/public/news/2024-03/IMG_3300.jpg?itok=FWknYs5_') no-repeat center center;
+    background-size: cover; /* Imagen de fondo cubriendo la página */
+    margin: 0;
+    padding: 0;
+    color: #002F6C; /* Azul institucional para texto */
+}
+
+/* Barra de navegación */
+.navbar {
+    background-color: #002F6C; /* Azul DIGESETT */
+    border-bottom: 2px solid #00508B; /* Azul más oscuro */
+}
+
+.navbar .navbar-brand {
+    color: #000000 !important; /* Blanco para contraste */
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.navbar .navbar-nav .nav-link {
+    color: #ffffff;
+    padding: 10px 15px;
+    transition: background-color 0.3s, border-radius 0.3s;
+    text-transform: uppercase;
+}
+
+.navbar .navbar-nav .nav-link:hover {
+    background-color: #00508B; /* Azul más oscuro */
+    border-radius: 5px;
+}
+
+/* Hacer que los botones no se vean como botones */
+.navbar .navbar-nav .nav-item button {
+    background: none;
+    border: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    padding: 0;
+    margin: 10px;
+}
+
+.navbar-toggler-icon {
+    background-color: #ffffff;
+}
+
+/* Títulos */
+h1 {
+    color: #ffffff; /* Blanco para destacarse en el fondo */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Sombra para mejor visibilidad */
+    font-size: 2.5rem;
+    margin-top: 20px;
+    text-align: center;
+}
+
+/* Estilo para botones */
+.btn {
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.btn-success {
+    background-color: #28A745;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    transform: scale(1.05); /* Efecto de agrandamiento */
+}
+
+/* Botones de acciones */
+.btn-primary {
+    background-color: #002F6C; /* Azul institucional */
+    border: none;
+    color: rgb(255, 255, 255);
+}
+
+.btn-primary:hover {
+    background-color: #00508B; /* Azul más oscuro */
+    transform: scale(1.05);
+}
+
+.btn-danger {
+    background-color: #DC3545;
+    border: none;
+}
+
+.btn-danger:hover {
+    background-color: #C82333;
+}
+
+/* Modal */
+.modal-content {
+    border-radius: 10px;
+}
+
+.modal-header {
+    background-color: #002F6C; /* Azul institucional */
+    color: white;
+    font-weight: bold;
+}
+
+.modal-footer button {
+    border-radius: 5px;
+}
+
+/* Tabla */
+table {
+    width: 100%;
+    margin-top: 30px;
+    border-collapse: collapse;
+    background-color: rgba(255, 255, 255, 0.9); /* Fondo semitransparente */
+}
+
+table th, table td {
+    padding: 12px;
+    text-align: left;
+}
+
+table th {
+    background-color: #00508B; /* Azul más oscuro */
+    color: white;
+}
+
+table tbody tr:nth-child(even) {
+    background-color: rgba(240, 240, 240, 0.8); /* Gris claro semitransparente */
+}
+
+table tbody tr:hover {
+    background-color: rgba(200, 200, 200, 0.9); /* Gris más oscuro al pasar el ratón */
+}
+
+/* Contenedor principal */
+.container {
+    max-width: 100%;
+    background-color: rgba(255, 255, 255, 0.9); /* Fondo blanco semitransparente */
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+

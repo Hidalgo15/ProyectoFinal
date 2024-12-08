@@ -1,0 +1,351 @@
+@page "/Oficina central/Ingresos"
+@layout LayoutMod3
+@rendermode InteractiveServer
+@inject ContextoDige Cd
+@inject NavigationManager NavMan
+@using Microsoft.EntityFrameworkCore
+@using System.Globalization
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/Oficina central">Oficina Central</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" style="color:black " href="/Oficina central/Gestion Agentes">Gestión Agentes</a>
+                </li>
+                 <li class="nav-item">
+                    <a class="nav-link" style="color:black " href="/Oficina central/Ingresos">Ingresos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" style="color:black " href="/Login">Cerrar sesión</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="header-box mx-auto mt-5 p-3">
+    <h2 class="text-center">REPORTE DE INGRESOS 📈</h2>
+</div>
+
+<style>
+    .header-box {
+        background-color: rgba(255, 255, 255, 0.9); /* Blanco semitransparente */
+        border-radius: 8px; /* Bordes redondeados */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+        max-width: 600px; /* Ancho máximo */
+    }
+
+    h2 {
+        color: #000; /* Color del texto */
+        margin: 0;
+    }
+</style>
+
+<div class="form-box p-4 mt-3">
+    <div class="form-group mb-3">
+        <label for="mes">Mes</label>
+        <select id="mes" @bind="selectedMonth" class="form-control">
+            @for (int i = 1; i <= 12; i++)
+            {
+                <option value="@i">@GetMonthName(i)</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="año">Año</label>
+        <input type="number" id="año" @bind="selectedYear" class="form-control" placeholder="Ingrese el año" />
+    </div>
+
+    <button class="btn btn-primary w-100" @onclick="GenerarReporte">Generar Reporte</button>
+</div>
+
+<style>
+    .form-box {
+        background-color: #fff; /* Fondo blanco */
+        border-radius: 8px; /* Bordes redondeados */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+        max-width: 500px; /* Ancho máximo del cuadro */
+        margin: auto; /* Centrado horizontal */
+        border: 1px solid #ddd; /* Borde gris claro */
+    }
+
+    .form-group label {
+        font-weight: bold;
+        color: #333;
+    }
+
+    .form-control {
+        border-radius: 4px;
+        border: 1px solid #ccc;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+        font-weight: bold;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #004085;
+    }
+</style>
+
+
+@if (reporte != null)
+{
+    <div class="info-box p-3 mt-3">
+    <h4>Ingresos del mes @GetMonthName(selectedMonth) @selectedYear</h4>
+</div>
+
+<style>
+    .info-box {
+        background-color: #fff; /* Fondo blanco */
+        border-radius: 8px; /* Bordes redondeados */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+        padding: 15px; /* Espaciado interno */
+        max-width: 600px; /* Ancho máximo del cuadro */
+        margin: auto; /* Centrado horizontal */
+        border: 1px solid #ddd; /* Borde gris claro */
+        text-align: center; /* Centrar el contenido */
+    }
+
+    .info-box h4 {
+        margin: 0;
+        font-size: 1.5rem; /* Tamaño de fuente */
+        color: #333; /* Color del texto */
+    }
+</style>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Tipo de Multa</th>
+                <th>Cantidad</th>
+                <th>Total Cobrado</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in reporte)
+            {
+                <tr>
+                    <td>@item.Nombre</td>
+                    <td>@item.Cantidad</td>
+                    <td>@item.Total</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="info-box p-3 mt-3">
+    <h5>Total Cobrado: @totalCobrado</h5>
+</div>
+
+<style>
+    .info-box {
+        background-color: #ffffff; /* Fondo blanco */
+        border-radius: 8px; /* Bordes redondeados */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+        padding: 15px; /* Espaciado interno */
+        max-width: 400px; /* Ancho máximo del cuadro */
+        margin: auto; /* Centrado horizontal */
+        border: 1px solid #ddd; /* Borde gris claro */
+    }
+
+    .info-box h5 {
+        margin: 0; /* Eliminar márgenes del h5 */
+        font-size: 1.2rem; /* Tamaño de fuente */
+        color: #333; /* Color del texto */
+        text-align: center; /* Centrar el texto */
+    }
+</style>
+
+}
+
+@code {
+    private int selectedMonth = DateTime.Now.Month;
+    private int selectedYear = DateTime.Now.Year;
+    private List<ReporteIngreso> reporte;
+    private decimal totalCobrado = 0;
+
+    public class ReporteIngreso
+    {
+        public string Nombre { get; set; }
+        public int Cantidad { get; set; }
+        public decimal Total { get; set; }
+    }
+
+    // Función para obtener el nombre del mes
+    private string GetMonthName(int month)
+    {
+        return new DateTime(selectedYear, month, 1).ToString("MMMM", CultureInfo.InvariantCulture);
+    }
+
+    private async Task GenerarReporte()
+    {
+        // Obtener las multas del mes y año seleccionados
+        var multas = await Cd.Multas
+            .Include(m => m.Concepto)
+            .Where(m => m.Fecha.Month == selectedMonth && m.Fecha.Year == selectedYear && m.Estado == Estado.Cobrado)
+            .ToListAsync();
+
+        // Agrupar por tipo de multa y calcular total y cantidad
+        reporte = multas
+            .GroupBy(m => m.Concepto.Nombre)
+            .Select(g => new ReporteIngreso
+            {
+                Nombre = g.Key,
+                Cantidad = g.Count(),
+                Total = g.Sum(m => m.Concepto.Monto)
+            })
+            .ToList();
+
+        // Calcular el total cobrado
+        totalCobrado = reporte.Sum(r => r.Total);
+    }
+}
+
+<style>
+    /* Fondo general */
+body {
+    background: url('https://presidencia.gob.do/sites/default/files/styles/large/public/news/2024-03/IMG_3300.jpg?itok=FWknYs5_') no-repeat center center;
+    background-size: cover;
+    color: #000000;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Barra de navegación */
+.navbar {
+    background-color: rgba(0, 0, 0, 0.9);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.navbar-brand {
+    color: #000000 !important;
+    font-weight: bold;
+}
+
+.navbar-nav .nav-link {
+    color: #000000 !important;
+    font-size: 1rem;
+    margin-right: 10px;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #ffcc00 !important;
+}
+
+/* Título de la página */
+h3 {
+    text-align: center;
+    font-size: 2rem;
+    color: #000000;
+    margin-top: 20px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Formularios */
+.form-group {
+    margin: 20px auto;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    font-weight: bold;
+    color: #000000;
+    margin-bottom: 5px;
+}
+
+input.form-control,
+select.form-control {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+input.form-control:focus,
+select.form-control:focus {
+    border-color: #000000;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+button.btn-primary {
+    background-color: #000000;
+    border: none;
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 5px;
+    margin: 20px auto;
+    display: block;
+    transition: background-color 0.3s ease;
+}
+
+button.btn-primary:hover {
+    background-color: #000000;
+}
+
+/* Tabla */
+.table {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    margin: 20px auto;
+    max-width: 800px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.table th, 
+.table td {
+    text-align: center;
+    padding: 15px;
+    vertical-align: middle;
+}
+
+.table th {
+    background-color: #000000;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.table tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+.table tr:nth-child(even) {
+    background-color: #e9e9e9;
+}
+
+.table td {
+    font-size: 0.9rem;
+}
+
+/* Resumen de ingresos */
+h4 {
+    text-align: center;
+    font-size: 1.5rem;
+    color: #000000;
+    margin-top: 20px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+h5 {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #333;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+
+</style>

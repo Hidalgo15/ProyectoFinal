@@ -1,0 +1,117 @@
+/* Fondo de la página */
+body[b-nrs93wfv28] {
+    background: url('https://presidencia.gob.do/sites/default/files/styles/large/public/news/2024-03/IMG_3300.jpg?itok=FWknYs5_') no-repeat center center;
+    background-size: cover;
+    color: #fff; /* Texto blanco para contraste */
+}
+
+/* Contenedor principal */
+.container[b-nrs93wfv28] {
+    background-color: rgba(255, 255, 255, 0.9); /* Fondo semitransparente */
+    border-radius: 10px;
+    padding: 20px;
+}
+
+/* Título */
+h2[b-nrs93wfv28], p[b-nrs93wfv28] {
+    color: #00549d;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7); /* Sombra para mayor contraste */
+}
+
+/* Botones */
+.btn-primary[b-nrs93wfv28] {
+    background-color: #00549d;
+    border: none;
+    color: #fff;
+}
+
+.btn-primary:hover[b-nrs93wfv28] {
+    background-color: #003f7d;
+}
+
+.btn-danger[b-nrs93wfv28] {
+    background-color: #dc3545;
+}
+
+.btn-danger:hover[b-nrs93wfv28] {
+    background-color: #c82333;
+}
+
+.btn-secondary[b-nrs93wfv28] {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+.btn-secondary:hover[b-nrs93wfv28] {
+    background-color: #5a6268;
+}
+
+/* Tabla */
+table[b-nrs93wfv28] {
+    width: 100%;
+    margin-top: 30px;
+    border-collapse: collapse;
+    background-color: rgba(255, 255, 255, 0.9); /* Fondo semitransparente */
+}
+
+table th[b-nrs93wfv28] {
+    background-color: #00549d;
+    color: #fff;
+}
+
+table td[b-nrs93wfv28] {
+    color: #000;
+}
+
+table tbody tr:nth-child(even)[b-nrs93wfv28] {
+    background-color: #f2f2f2;
+}
+
+table tbody tr:hover[b-nrs93wfv28] {
+    background-color: #e0e0e0;
+}
+
+/* Estilos para las imágenes de la tabla */
+table img[b-nrs93wfv28] {
+    border-radius: 5px;
+}
+
+/* Modal */
+.modal-content[b-nrs93wfv28] {
+    background-color: rgba(255, 255, 255, 0.9); /* Fondo semitransparente para modal */
+    border-radius: 10px;
+}
+
+/* Estilos de los botones del modal */
+.modal-footer .btn-secondary[b-nrs93wfv28] {
+    background-color: #6c757d;
+}
+
+.modal-footer .btn-danger[b-nrs93wfv28] {
+    background-color: #dc3545;
+}
+
+.modal-footer .btn-secondary:hover[b-nrs93wfv28] {
+    background-color: #5a6268;
+}
+
+.modal-footer .btn-danger:hover[b-nrs93wfv28] {
+    background-color: #c82333;
+}
+
+/* Estilos del navbar */
+.navbar[b-nrs93wfv28] {
+    background-color: rgba(255, 255, 255, 0.8); /* Fondo semitransparente para navbar */
+}
+
+.navbar-brand[b-nrs93wfv28] {
+    color: #00549d;
+}
+
+.navbar-nav .nav-link[b-nrs93wfv28] {
+    color: #00549d;
+}
+
+.navbar-nav .nav-link:hover[b-nrs93wfv28] {
+    color: #003f7d;
+}

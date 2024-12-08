@@ -1,0 +1,110 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Background style for the RegistrarUsuario page */
+body {
+    font-family: Arial, sans-serif;
+    background: url('https://presidencia.gob.do/sites/default/files/styles/large/public/news/2024-03/IMG_3300.jpg?itok=FWknYs5_') no-repeat center center;
+    background-size: cover; /* Ensures the image covers the entire page */
+    color: #002F6C; /* DIGESETT blue */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 20px;
+}
+
+/* Title */
+h3 {
+    color: #FFFFFF; /* White for visibility */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Shadow for readability */
+    font-size: 2rem;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Form container */
+form {
+    background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white background */
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 400px;
+    text-align: left;
+}
+
+/* Form group */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+/* Labels */
+label {
+    font-weight: bold;
+    color: #002F6C; /* DIGESETT blue */
+}
+
+/* Input styles */
+.form-control {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid #C2D6E8; /* Light blue-gray */
+    border-radius: 5px;
+    margin-top: 5px;
+    transition: border-color 0.3s;
+}
+
+.form-control:focus {
+    border-color: #00508B; /* Darker DIGESETT blue */
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 80, 139, 0.5); /* Light blue shadow */
+}
+
+/* Submit button */
+button[type="submit"] {
+    background-color: #002F6C; /* DIGESETT blue */
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    font-size: 1rem;
+    border-radius: 5px;
+    width: 100%;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+button[type="submit"]:hover {
+    background-color: #00508B; /* Darker DIGESETT blue */
+    transform: scale(1.02); /* Slight scaling effect */
+}
+
+/* Success and error messages */
+.alert {
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+.alert-success {
+    background-color: #d4edda; /* Light green */
+    color: #155724; /* Dark green */
+    border: 1px solid #c3e6cb;
+}
+
+.alert-danger {
+    background-color: #f8d7da; /* Light red */
+    color: #721c24; /* Dark red */
+    border: 1px solid #f5c6cb;
+}
+
+/* Spacing for alerts */
+.mt-3 {
+    margin-top: 1rem;
+}

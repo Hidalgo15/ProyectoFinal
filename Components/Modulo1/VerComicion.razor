@@ -1,0 +1,291 @@
+@page "/Agente/Comision"
+@using Microsoft.EntityFrameworkCore
+@layout LayoutMod3
+@inject ContextoDige Cd
+@inject NavigationManager NavMan
+
+
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/Agente">Agente</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/Agente/Mapa">Mapas de multas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/Agente/Comision">Comision</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/Login">Cerrar sesión</a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="header-box mx-auto mt-5 p-3">
+    <h2 class="text-center">COMISION POR MES 💰</h2>
+</div>
+
+<style>
+    .header-box {
+        background-color: rgba(255, 255, 255, 0.9); /* Blanco semitransparente */
+        border-radius: 8px; /* Bordes redondeados */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+        max-width: 600px; /* Ancho máximo */
+    }
+
+    h2 {
+        color: #000; /* Color del texto */
+        margin: 0;
+    }
+</style>
+
+
+<div class="info-box p-3 mt-3">
+    <p><strong>Total de Ingresos:</strong> @totalComision</p>
+</div>
+
+<style>
+    .info-box {
+        background-color: #fff; /* Fondo blanco */
+        border-radius: 8px; /* Bordes redondeados */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+        padding: 15px; /* Espaciado interno */
+        max-width: 400px; /* Ancho máximo del cuadro */
+        margin: auto; /* Centrado en la página */
+        border: 1px solid #ddd; /* Borde gris claro */
+    }
+
+    .info-box p {
+        margin: 0;
+        font-size: 1.1rem; /* Tamaño de fuente */
+        color: #333; /* Color del texto */
+    }
+
+    .info-box strong {
+        color: #000; /* Color del texto en negrita */
+    }
+</style>
+
+
+<div class="header-box ms-3 mt-5 p-3">
+    <h2>Últimos 5 Aportes (Últimas 5 Multas):</h2>
+</div>
+
+<style>
+    .header-box {
+        background-color: rgba(255, 255, 255, 0.9); /* Blanco semitransparente */
+        border-radius: 8px; /* Bordes redondeados */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+        max-width: 600px; /* Ancho máximo */
+        margin-left: 0; /* Asegura que no esté centrado */
+    }
+
+    h2 {
+        color: #000; /* Color del texto */
+        margin: 0;
+        text-align: left; /* Alineación a la izquierda */
+    }
+</style>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Comisión</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var multa in ultimasMultas)
+        {
+            <tr>
+                <td>@multa.Fecha.ToString("dd/MM/yyyy")</td>
+                <td>@(multa.Concepto?.Monto * 0.10m)</td>  <!-- Calculamos el 10% de la multa -->
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private decimal totalComision = 0;
+    private List<Multa> ultimasMultas = new List<Multa>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Obtener el usuario actual de la sesión
+        var usuarioActual = UsuarioSession.GetInstance().UsuarioActual;
+
+        if (usuarioActual == null)
+        {
+            // Redirigir al login si no hay usuario en sesión
+            NavMan.NavigateTo("/Login");
+            return;
+        }
+
+        // Cargar las últimas 5 multas del agente en sesión, incluyendo el concepto relacionado
+        ultimasMultas = await Cd.Multas
+            .Where(m => m.CedulaUsuario == usuarioActual.Cedula && m.Estado == Estado.Cobrado)  // Filtrar por las multas cobradas
+            .OrderByDescending(m => m.Fecha)  // Ordenar por fecha descendente
+            .Take(5)  // Obtener las últimas 5
+            .Include(m => m.Concepto)  // Incluir el concepto relacionado para obtener el monto
+            .ToListAsync();
+
+        // Calcular la comisión total (10% de cada multa)
+        totalComision = ultimasMultas.Sum(m => m.Concepto?.Monto * 0.10m ?? 0);
+    }
+
+    private void VerComision()
+    {
+        // Aquí podrías redirigir a una página con detalles más específicos, si lo deseas.
+        NavMan.NavigateTo("/Agente/DetalleComision");
+    }
+}
+
+<style>
+    /* Fondo de la página */
+body {
+    background: url('https://presidencia.gob.do/sites/default/files/styles/large/public/news/2024-03/IMG_3300.jpg?itok=FWknYs5_') no-repeat center center;
+    background-size: cover;
+    color: #fff; /* Texto blanco para contraste */
+}
+
+/* Contenedor principal */
+.container {
+    background-color: rgba(255, 255, 255, 0.9); /* Fondo semitransparente */
+    border-radius: 10px;
+    padding: 20px;
+}
+
+/* Título principal */
+h2 {
+    color: #00549d;
+    text-align: center;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7); /* Sombra para mayor contraste */
+}
+
+/* Subtítulo */
+h3 {
+    color: #000000;
+}
+
+/* Botones */
+.btn-primary {
+    background-color: #00549d;
+    border: none;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+}
+
+.btn-primary:hover {
+    background-color: #003f7d;
+}
+
+.btn-secondary {
+    background-color: #000000;
+    color: #fff;
+}
+
+.btn-secondary:hover {
+    background-color: #000000;
+}
+
+/* Tabla */
+table {
+    width: 100%;
+    margin-top: 30px;
+    border-collapse: collapse;
+    background-color: rgba(255, 255, 255, 0.9); /* Fondo semitransparente */
+}
+
+table th {
+    background-color: #00549d;
+    color: #000000;
+}
+
+table td {
+    color: #000000;
+}
+
+table tbody tr:nth-child(even) {
+    background-color: #ffffff;
+}
+
+table tbody tr:hover {
+    background-color: #ffffff;
+}
+
+/* Estilos para las imágenes de la tabla */
+table img {
+    border-radius: 5px;
+}
+
+/* Estilos del navbar */
+.navbar {
+    background-color: rgba(255, 255, 255, 0.8); /* Fondo semitransparente para navbar */
+}
+
+.navbar-brand {
+    color: #00549d;
+}
+
+.navbar-nav .nav-link {
+    color: #00549d;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #003f7d;
+}
+
+/* Estilo de la fila en la tabla con la comisión */
+table td:nth-child(2) {
+    color: #28a745; /* Verde para las comisiones */
+    font-weight: bold;
+}
+
+/* Estilos del contenedor del botón */
+.text-end {
+    margin-top: 30px;
+}
+
+/* Estilo para el párrafo de total de ingresos */
+p {
+    font-size: 1.2em;
+    color: #28a745; /* Verde para el total de ingresos */
+    font-weight: bold;
+    margin-top: 20px;
+}
+
+/* Modal */
+.modal-content {
+    background-color: rgba(255, 255, 255, 0.9); /* Fondo semitransparente para modal */
+    border-radius: 10px;
+}
+
+/* Estilos de los botones del modal */
+.modal-footer .btn-secondary {
+    background-color: #000000;
+}
+
+.modal-footer .btn-danger {
+    background-color: #dc3545;
+}
+
+.modal-footer .btn-secondary:hover {
+    background-color: #000000;
+}
+
+.modal-footer .btn-danger:hover {
+    background-color: #c82333;
+}
+
+</style>

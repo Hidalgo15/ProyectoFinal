@@ -1,0 +1,92 @@
+@page "/Administrativo/ConceptosMultas/Añadir"
+@page "/Administrativo/ConceptosMultas/Editar/{ConceptoId:int}"
+@layout LayoutMod3
+@rendermode InteractiveServer
+@inject ContextoDige Cd
+@inject NavigationManager NavMan
+
+<h2>@TituloPagina</h2>
+
+<div class="container">
+    <EditForm Model="nuevoConcepto" OnValidSubmit="GuardarConcepto">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group mb-3">
+            <label for="Infraccion">Nombre:</label>
+            <InputText id="Infraccion" class="form-control" @bind-Value="nuevoConcepto.Nombre" />
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="Monto">Monto:</label>
+            <InputNumber id="Monto" class="form-control" @bind-Value="nuevoConcepto.Monto" />
+        </div>
+
+        <button class="btn btn-primary" type="submit">@BotonTexto</button>
+        <button class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
+    </EditForm>
+</div>
+
+@code {
+    private Conceptos nuevoConcepto = new Conceptos();
+    private string TituloPagina = "Añadir Concepto de Multa";
+    private string BotonTexto = "Guardar";
+
+    private bool EsEdicion => ConceptoId.HasValue;
+
+    // Parámetro que captura el ID del concepto de multa para edición
+    [Parameter]
+    public int? ConceptoId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Si estamos en modo edición, cargamos el concepto correspondiente
+        if (EsEdicion)
+        {
+            TituloPagina = "Editar Concepto de Multa";
+            BotonTexto = "Actualizar";
+            nuevoConcepto = await Cd.Concepto.FindAsync(ConceptoId);
+
+            if (nuevoConcepto == null)
+            {
+                // Si no encontramos el concepto, redirigimos
+                NavMan.NavigateTo("/Administrativo/ConceptosMultas");
+            }
+        }
+        else
+        {
+            // Si estamos en modo añadir, simplemente inicializamos un nuevo objeto
+            nuevoConcepto = new Conceptos();
+        }
+    }
+
+    private async Task GuardarConcepto()
+    {
+        // Verificamos si los campos principales están vacíos en el modo "Añadir"
+        if (string.IsNullOrEmpty(nuevoConcepto.Nombre) || nuevoConcepto.Monto == null && !EsEdicion)
+        {
+            // Si no se han completado los campos necesarios, no guardamos nada
+            return;
+        }
+
+        // Si estamos en modo edición, actualizamos el concepto
+        if (EsEdicion)
+        {
+            Cd.Concepto.Update(nuevoConcepto);
+        }
+        else
+        {
+            // Añadimos un nuevo concepto
+            Cd.Concepto.Add(nuevoConcepto);
+        }
+
+        await Cd.SaveChangesAsync();
+        NavMan.NavigateTo("/Administrativo/ConceptosMultas"); // Redirigimos a la lista de conceptos
+    }
+
+    private void Cancelar()
+    {
+        // Al presionar Cancelar, redirigimos sin hacer nada
+        NavMan.NavigateTo("/Administrativo/ConceptosMultas"); // Redirigimos a la lista de conceptos de multas
+    }
+}

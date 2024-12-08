@@ -1,0 +1,200 @@
+@page "/Agente/Mapa"
+@using Microsoft.EntityFrameworkCore
+@layout LayoutMod3
+@rendermode InteractiveServer
+@inject ContextoDige Cd
+@inject NavigationManager NavMan
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/Agente">Agente</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/Agente/Mapa">Mapas de multas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/Agente/Comision">Comision</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/Login">Cerrar sesión</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <Map Multas="multas" />
+</div>
+
+@code {
+    private List<Multa> multas = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Obtener el usuario actual de la sesión
+        var usuarioActual = UsuarioSession.GetInstance().UsuarioActual;
+
+        if (usuarioActual == null)
+        {
+            // Redirigir al login si no hay usuario en sesión
+            NavMan.NavigateTo("/Login");
+            return;
+        }
+
+        // Filtrar las multas del agente en sesión dentro de las últimas 4 semanas
+        var fechaLimite = DateTime.Now.AddDays(-28); // Últimas 4 semanas
+        multas = await Cd.Multas
+            .Where(m => m.CedulaUsuario == usuarioActual.Cedula && m.Fecha >= fechaLimite)
+            .Include(m => m.Concepto)  // Incluir el concepto para obtener el monto si es necesario
+            .ToListAsync();
+
+        // Aquí puedes verificar si las multas tienen latitud y longitud
+        foreach (var multa in multas)
+        {
+            if (multa.Latitud == null || multa.Longitud == null)
+            {
+                // Puedes poner un mensaje de advertencia o manejar el caso si la multa no tiene ubicación
+                Console.WriteLine($"Multa {multa.Id} no tiene ubicación asignada.");
+            }
+        }
+    }
+}
+
+<style>
+    /* Fondo de la página */
+body {
+    background: url('https://presidencia.gob.do/sites/default/files/styles/large/public/news/2024-03/IMG_3300.jpg?itok=FWknYs5_') no-repeat center center;
+    background-size: cover;
+    color: #fff; /* Texto blanco para contraste */
+}
+
+/* Contenedor principal */
+.container {
+    background-color: rgba(255, 255, 255, 0.9); /* Fondo semitransparente */
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 20px;
+    max-width: 1000px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Título de la página */
+h2 {
+    color: #00549d;
+    text-align: center;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7); /* Sombra para mayor contraste */
+    margin-bottom: 20px;
+}
+
+/* Navbar */
+.navbar {
+    background-color: rgba(255, 255, 255, 0.8); /* Fondo semitransparente */
+}
+
+.navbar-brand {
+    color: #00549d;
+    font-weight: bold;
+}
+
+.navbar-nav .nav-link {
+    color: #00549d;
+    font-weight: normal;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #003f7d;
+}
+
+/* Estilo del mapa */
+.map-container {
+    width: 100%;
+    height: 500px; /* Ajusta el alto del mapa */
+    background-color: #f4f4f4; /* Fondo para que sea visible si el mapa no carga */
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos para las tarjetas o elementos de ubicación */
+.mapa-card {
+    background-color: #fff;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.1);
+}
+
+.mapa-card p {
+    color: #333;
+    font-size: 1rem;
+}
+
+/* Estilo de los mensajes de advertencia */
+.warning-message {
+    background-color: #ffcc00;
+    color: #5a5a5a;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 15px;
+    text-align: center;
+}
+
+/* Estilos de las tablas (si las tienes) */
+table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+    background-color: rgba(255, 255, 255, 0.9); /* Fondo semitransparente */
+}
+
+table th {
+    background-color: #00549d;
+    color: #fff;
+}
+
+table td {
+    color: #000;
+}
+
+table tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+table tbody tr:hover {
+    background-color: #e0e0e0;
+}
+
+/* Estilo para los botones */
+.btn-primary {
+    background-color: #00549d;
+    border: none;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+}
+
+.btn-primary:hover {
+    background-color: #003f7d;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+/* Estilos de los enlaces en el navbar */
+.navbar-nav .nav-link.active {
+    color: #003f7d; /* Para resaltar el enlace activo */
+    font-weight: bold;
+}
+
+</style>

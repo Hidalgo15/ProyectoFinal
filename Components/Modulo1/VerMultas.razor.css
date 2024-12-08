@@ -1,0 +1,117 @@
+/* Fondo de la página */
+body {
+    background: url('https://presidencia.gob.do/sites/default/files/styles/large/public/news/2024-03/IMG_3300.jpg?itok=FWknYs5_') no-repeat center center;
+    background-size: cover;
+    color: #fff; /* Texto blanco para contraste */
+}
+
+/* Contenedor principal */
+.container {
+    background-color: rgba(255, 255, 255, 0.9); /* Fondo semitransparente */
+    border-radius: 10px;
+    padding: 20px;
+}
+
+/* Título */
+h2, p {
+    color: #00549d;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7); /* Sombra para mayor contraste */
+}
+
+/* Botones */
+.btn-primary {
+    background-color: #00549d;
+    border: none;
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background-color: #003f7d;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+/* Tabla */
+table {
+    width: 100%;
+    margin-top: 30px;
+    border-collapse: collapse;
+    background-color: rgba(255, 255, 255, 0.9); /* Fondo semitransparente */
+}
+
+table th {
+    background-color: #00549d;
+    color: #fff;
+}
+
+table td {
+    color: #000;
+}
+
+table tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+table tbody tr:hover {
+    background-color: #e0e0e0;
+}
+
+/* Estilos para las imágenes de la tabla */
+table img {
+    border-radius: 5px;
+}
+
+/* Modal */
+.modal-content {
+    background-color: rgba(255, 255, 255, 0.9); /* Fondo semitransparente para modal */
+    border-radius: 10px;
+}
+
+/* Estilos de los botones del modal */
+.modal-footer .btn-secondary {
+    background-color: #6c757d;
+}
+
+.modal-footer .btn-danger {
+    background-color: #dc3545;
+}
+
+.modal-footer .btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.modal-footer .btn-danger:hover {
+    background-color: #c82333;
+}
+
+/* Estilos del navbar */
+.navbar {
+    background-color: rgba(255, 255, 255, 0.8); /* Fondo semitransparente para navbar */
+}
+
+.navbar-brand {
+    color: #00549d;
+}
+
+.navbar-nav .nav-link {
+    color: #00549d;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #003f7d;
+}

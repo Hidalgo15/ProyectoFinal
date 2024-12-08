@@ -1,0 +1,332 @@
+@page "/Oficina central/Gestion Agentes"
+@layout LayoutMod3
+@rendermode InteractiveServer
+@inject ContextoDige Cd
+@inject NavigationManager NavMan
+@using Microsoft.EntityFrameworkCore;
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/Oficina central">Oficina Central</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" style="color:black " href="/Oficina central/Gestion Agentes">Gestión Agentes</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" style="color:black " href="/Oficina central/Mapa">Mapa</a>
+                </li>
+                 <li class="nav-item">
+                    <a class="nav-link" style="color:black " href="/Oficina central/Ingresos">Ingresos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" style="color:black " href="/Login">Cerrar sesión</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="header-box mx-auto mt-5 p-3">
+    <h2 class="text-center">GESTION DE USUARIOS</h2>
+</div>
+
+<style>
+    .header-box {
+        background-color: rgba(255, 255, 255, 0.9); /* Blanco semitransparente */
+        border-radius: 8px; /* Bordes redondeados */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+        max-width: 600px; /* Ancho máximo */
+    }
+
+    h2 {
+        color: #000; /* Color del texto */
+        margin: 0;
+    }
+</style>
+
+<div class="m-3 text-end">
+    <button class="btn btn-success" @onclick="IrAñadirUsuario">Añadir Usuario</button>
+</div>
+
+<div class="container">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Cédula</th>
+                <th>Clave</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var usuario in usuarios)
+            {
+                <tr>
+                    <td>@usuario.Cedula</td>
+                    <td>@usuario.Clave</td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="() => EditarUsuario(usuario.Cedula)">Editar</button>
+                        <button class="btn btn-danger" @onclick="() => ConfirmarEliminacion(usuario)">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@if (mostrarModalEliminar)
+{
+    <div class="modal" tabindex="-1" role="dialog" style="display: block;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmación de Eliminación</h5>
+                    <button type="button" class="close" @onclick="() => mostrarModalEliminar = false" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Está seguro de que desea eliminar este usuario?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="() => mostrarModalEliminar = false">Cancelar</button>
+                    <button type="button" class="btn btn-danger" @onclick="EliminarUsuarioSeleccionado">Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<Usuario> usuarios = new();
+    private Usuario usuarioSeleccionado;
+    private bool mostrarModalEliminar = false;
+
+    protected override async Task OnInitializedAsync()
+{
+    var sesion = UsuarioSession.GetInstance();
+
+    // Validar si hay un usuario en sesión
+    if (sesion.UsuarioActual == null)
+    {
+        NavMan.NavigateTo("/Login");
+        return;
+    }
+
+    
+
+    // Cargar los usuarios para mostrar en el módulo
+    usuarios = await Cd.Usuarios
+        .Where(u => u.Tipo == TipoUsuario.Agente)
+        .ToListAsync();
+}
+
+
+    private void IrAñadirUsuario()
+    {
+        NavMan.NavigateTo("/Oficina central/Gestion Agentes/Añadir");
+    }
+
+    private void EditarUsuario(string cedula)
+    {
+        NavMan.NavigateTo($"/Oficina central/Gestion Agentes/Editar/{cedula}");
+    }
+
+    private void ConfirmarEliminacion(Usuario usuario)
+    {
+        usuarioSeleccionado = usuario;
+        mostrarModalEliminar = true;
+    }
+
+    private async Task EliminarUsuarioSeleccionado()
+    {
+        if (usuarioSeleccionado != null)
+        {
+            Cd.Usuarios.Remove(usuarioSeleccionado);
+            await Cd.SaveChangesAsync();
+
+            usuarios.Remove(usuarioSeleccionado);
+            usuarioSeleccionado = null;
+            mostrarModalEliminar = false;
+        }
+    }
+
+    private void CerrarSesion()
+{
+    UsuarioSession.GetInstance().LimpiarSesion();
+    NavMan.NavigateTo("/Login");
+}
+
+}
+
+<style>
+    /* Fondo de la página */
+body {
+    background: url('https://presidencia.gob.do/sites/default/files/styles/large/public/news/2024-03/IMG_3300.jpg?itok=FWknYs5_') no-repeat center center;
+    background-size: cover;
+    color: #fff;
+}
+
+/* Navbar */
+.navbar {
+    background-color: rgba(0, 84, 157, 0.9); /* Azul oscuro con opacidad */
+    border-bottom: 2px solid #004080;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.navbar-brand {
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+.navbar-brand:hover {
+    color: #d1ecf1;
+}
+
+.nav-link {
+    color: #fff;
+    font-size: 1.1rem;
+    margin-right: 15px;
+}
+
+.nav-link:hover {
+    color: #d1ecf1;
+}
+
+/* Título de la página */
+h2 {
+    color: #00549d;
+    text-align: center;
+    margin: 40px 0;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+/* Contenedor principal */
+.container {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    margin-top: 20px;
+}
+
+/* Botón Añadir Usuario */
+.btn-success {
+    background-color: #28a745;
+    border: none;
+    color: #fff;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 5px;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+}
+
+/* Tabla */
+.table {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.table th {
+    background-color: #00549d;
+    color: #fff;
+    text-align: center;
+}
+
+.table td {
+    text-align: center;
+    vertical-align: middle;
+    color: #333;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f2f2f2;
+}
+
+.table tbody tr:hover {
+    background-color: #e9ecef;
+}
+
+/* Botones de acciones */
+.btn-primary {
+    background-color: #00549d;
+    border: none;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 3px;
+}
+
+.btn-primary:hover {
+    background-color: #003f7d;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border: none;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 3px;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+/* Modal */
+.modal {
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-dialog {
+    max-width: 500px;
+}
+
+.modal-content {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    background-color: #00549d;
+    color: #fff;
+    font-weight: bold;
+}
+
+.modal-footer .btn-secondary {
+    background-color: #6c757d;
+    border: none;
+    color: #fff;
+}
+
+.modal-footer .btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.modal-footer .btn-danger {
+    background-color: #dc3545;
+    border: none;
+    color: #fff;
+}
+
+.modal-footer .btn-danger:hover {
+    background-color: #c82333;
+}
+
+
+
+</style>

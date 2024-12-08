@@ -1,0 +1,74 @@
+@page "/RegistrarUsuario"
+@inject NavigationManager NavMan
+@rendermode InteractiveServer
+@inject ContextoDige Cv
+
+<h3>Registrar Usuario</h3>
+
+<EditForm Model="nuevoUsuario" OnValidSubmit="Registrar">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="cedula">Cédula</label>
+        <InputText id="cedula" class="form-control" @bind-Value="nuevoUsuario.Cedula" />
+    </div>
+
+    <div class="form-group">
+        <label for="clave">Clave</label>
+        <InputText id="clave" class="form-control" @bind-Value="nuevoUsuario.Clave" type="password" />
+    </div>
+
+    <div class="form-group">
+        <label for="tipo">Tipo de Usuario</label>
+        <InputSelect id="tipo" class="form-control" @bind-Value="nuevoUsuario.Tipo">
+            <option value="Agente">Agente</option>
+            <option value="PersonalOficina">Personal de Oficina</option>
+            <option value="Administrador">Administrador</option>
+        </InputSelect>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Registrar</button>
+</EditForm>
+
+@if (mensajeExito)
+{
+    <div class="alert alert-success mt-3">
+        Usuario registrado con éxito.
+    </div>
+}
+
+@if (mensajeError)
+{
+    <div class="alert alert-danger mt-3">
+        Error al registrar el usuario.
+    </div>
+}
+
+@code {
+    private Usuario nuevoUsuario = new Usuario();
+    private bool mensajeExito = false;
+    private bool mensajeError = false;
+
+    private async Task Registrar()
+    {
+        try
+        {
+            Cv.Usuarios.Add(nuevoUsuario);
+            await Cv.SaveChangesAsync(); 
+
+            mensajeExito = true;
+            mensajeError = false;
+
+            
+            NavMan.NavigateTo("/Login");
+        }
+        catch (Exception)
+        {
+            mensajeError = true;
+            mensajeExito = false;
+        }
+    }
+}
+
+

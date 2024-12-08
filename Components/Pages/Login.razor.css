@@ -1,0 +1,94 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Background with .hola class */
+.hola {
+    font-family: Arial, sans-serif;
+    background: url('https://presidencia.gob.do/sites/default/files/styles/large/public/news/2024-03/IMG_3300.jpg?itok=FWknYs5_') no-repeat center center;
+    background-size: cover; /* Asegura que la imagen cubra todo el fondo */
+    color: #002F6C; /* Azul DIGESETT */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+}
+
+/* Title styles */
+h2 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: #FFFFFF; /* Blanco para destacar sobre la imagen */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Sombra para legibilidad */
+}
+
+/* Image styles */
+img {
+    max-width: 300px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    border: 2px solid #FFFFFF; /* Blanco para destacar sobre la imagen */
+}
+
+/* Form container */
+.formulario {
+    background-color: rgba(255, 255, 255, 0.9); /* Fondo blanco semitransparente */
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 400px;
+    text-align: left;
+    border: 1px solid #C2D6E8; /* Gris azulado */
+}
+
+/* Form group styles */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+/* Labels */
+label {
+    font-weight: bold;
+    color: #002F6C; /* Azul DIGESETT */
+}
+
+/* Input styles */
+.form-control {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid #C2D6E8; /* Gris azulado */
+    border-radius: 5px;
+    margin-top: 5px;
+    transition: border-color 0.3s;
+}
+
+.form-control:focus {
+    border-color: #00508B; /* Azul más oscuro */
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 80, 139, 0.5); /* Azul oscuro con transparencia */
+}
+
+/* Submit button styles */
+button[type="submit"] {
+    background-color: #002F6C; /* Azul DIGESETT */
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    font-size: 1rem;
+    border-radius: 5px;
+    width: 100%;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+button[type="submit"]:hover {
+    background-color: #00508B; /* Azul más oscuro */
+    transform: scale(1.02); /* Efecto sutil de agrandamiento */
+}

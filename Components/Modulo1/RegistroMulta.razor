@@ -1,0 +1,238 @@
+@page "/Agente/Añadir"
+@page "/Agente/Editar/{MultaId:int}"
+@using Microsoft.EntityFrameworkCore
+@layout LayoutMod3
+@rendermode InteractiveServer
+@inject ContextoDige Cd
+@inject NavigationManager NavMan
+
+
+<h2>@TituloPagina</h2>
+
+<div class="container">
+    <EditForm Model="nuevaMulta" OnValidSubmit="GuardarMulta">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group mb-3">
+            <label for="Nombre">Nombre:</label>
+            <InputText id="Nombre" class="form-control" @bind-Value="nuevaMulta.Nombre" />
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="Descripcion">Descripción:</label>
+            <InputText id="Descripcion" class="form-control" @bind-Value="nuevaMulta.Descripción" />
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="Latitud">Latitud:</label>
+            <InputNumber id="Latitud" class="form-control" @bind-Value="nuevaMulta.Latitud" />
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="Longitud">Longitud:</label>
+            <InputNumber id="Longitud" class="form-control" @bind-Value="nuevaMulta.Longitud" />
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="Foto">Foto:</label>
+            <InputText id="Foto" class="form-control" @bind-Value="nuevaMulta.Foto" />
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="Fecha">Fecha:</label>
+            <InputDate id="Fecha" class="form-control" @bind-Value="nuevaMulta.Fecha" />
+        </div>
+
+
+        <div class="form-group mb-3">
+    <label for="ConceptoId">Concepto:</label>
+    <InputSelect id="ConceptoId" class="form-control" @bind-Value="nuevaMulta.ConceptoId">
+        @foreach (var concepto in conceptos)
+        {
+            <option value="@concepto.Id">@concepto.Nombre</option>
+        }
+    </InputSelect>
+</div>
+
+
+        <button class="btn btn-primary" type="submit">@BotonTexto</button>
+        <button class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
+    </EditForm>
+</div>
+
+@code {
+    private Multa nuevaMulta = new Multa();
+    private string TituloPagina = "Añadir Multa";
+    private string BotonTexto = "Guardar";
+    private Usuario usuarioActual;
+
+    private bool EsEdicion => MultaId.HasValue;
+    private List<Conceptos> conceptos = new List<Conceptos>(); // Lista de conceptos
+
+    [Parameter]
+    public int? MultaId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Verificar usuario en sesión
+        usuarioActual = UsuarioSession.GetInstance().UsuarioActual;
+
+        if (usuarioActual == null)
+        {
+            NavMan.NavigateTo("/Login"); // Redirigir si no hay usuario
+            return;
+        }
+
+        // Obtener los conceptos registrados
+        conceptos = await Cd.Concepto.ToListAsync(); // Asegúrate de que Conceptos está en tu contexto
+
+        if (EsEdicion)
+        {
+            TituloPagina = "Editar Multa";
+            BotonTexto = "Actualizar";
+
+            nuevaMulta = await Cd.Multas.FindAsync(MultaId);
+
+            if (nuevaMulta == null)
+            {
+                NavMan.NavigateTo("/Agente");
+            }
+        }
+        else
+        {
+            // Configuración inicial para nueva multa
+            nuevaMulta.CedulaUsuario = usuarioActual.Cedula;
+            nuevaMulta.Fecha = DateTime.Now; // Fecha actual para nuevas multas
+        }
+    }
+
+    private async Task GuardarMulta()
+    {
+        if (EsEdicion)
+        {
+            Cd.Multas.Update(nuevaMulta);
+        }
+        else
+        {
+            await Cd.Multas.AddAsync(nuevaMulta);
+        }
+
+        await Cd.SaveChangesAsync();
+        NavMan.NavigateTo("/Agente");
+    }
+
+    private void Cancelar()
+    {
+        NavMan.NavigateTo("/Agente");
+    }
+}
+
+<style>
+    /* Fondo de la página */
+body {
+    background: url('https://presidencia.gob.do/sites/default/files/styles/large/public/news/2024-03/IMG_3300.jpg?itok=FWknYs5_') no-repeat center center;
+    background-size: cover;
+    color: #fff; /* Texto blanco para contraste */
+}
+
+/* Contenedor principal */
+.container {
+    background-color: rgba(255, 255, 255, 0.9); /* Fondo semitransparente */
+    border-radius: 10px;
+    padding: 30px;
+    margin-top: 20px;
+    max-width: 800px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Título de la página */
+h2 {
+    color: #00549d;
+    text-align: center;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7); /* Sombra para mayor contraste */
+    margin-bottom: 20px;
+}
+
+/* Estilos para el formulario */
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    font-size: 1.1rem;
+    color: #333;
+    font-weight: bold;
+}
+
+/* Estilo para los campos de entrada */
+.input-text, .input-number, .input-date, .input-select {
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    width: 100%;
+    font-size: 1rem;
+}
+
+/* Estilo para los botones */
+.btn-primary {
+    background-color: #00549d;
+    border: none;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.btn-primary:hover {
+    background-color: #003f7d;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+/* Estilos de los inputs */
+input:focus, select:focus {
+    outline: none;
+    border-color: #00549d;
+}
+
+/* Estilo para la tabla si es que la tienes en el futuro */
+table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+
+table th {
+    background-color: #00549d;
+    color: #fff;
+}
+
+table td {
+    color: #000;
+}
+
+table tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+table tbody tr:hover {
+    background-color: #e0e0e0;
+}
+
+</style>

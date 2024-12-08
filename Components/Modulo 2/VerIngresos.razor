@@ -1,0 +1,65 @@
+@page "/VerIngresos"
+@layout LayoutMod3
+@rendermode InteractiveServer
+@inject ContextoDige Cd
+@inject NavigationManager NavMan
+@using Microsoft.EntityFrameworkCore;
+
+
+<h1>Reporte de Ingresos</h1>
+
+<div>
+    <label for="mes">Mes:</label>
+    <select id="mes" @bind="mesSeleccionado">
+        @for (int i = 1; i <= 12; i++)
+        {
+            <option value="@i">@i</option>
+        }
+    </select>
+
+    <label for="anio">Año:</label>
+    <input type="number" id="anio" @bind="anioSeleccionado" />
+
+    <button class="btn btn-primary" @onclick="GenerarReporte">Generar Reporte</button>
+</div>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Tipo de Multa</th>
+            <th>Cantidad de Multas</th>
+            <th>Total Ingresado</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var grupo in datosReporte)
+        {
+            <tr>
+                <td>@grupo.Concepto</td>
+                <td>@CantidadMultas</td>
+                <td>@TotalIngreso</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@code {
+    private int mesSeleccionado;
+    private int anioSeleccionado;
+    private List <Multa> datosReporte = new List<Multa>();
+
+    public decimal TotalIngreso => datosReporte.Sum(multa => multa.Concepto.Monto);
+    public int CantidadMultas => datosReporte.Count;
+    
+    private async Task GenerarReporte()
+    {
+        var fechaInicio = new DateTime(anioSeleccionado, mesSeleccionado, 1);
+        var fechaFin = fechaInicio.AddMonths(1).AddDays(-1);
+
+        datosReporte = await Cd.Multas
+            .Where(m => m.Fecha >= fechaInicio && m.Fecha <= fechaFin)
+            .ToListAsync();
+    }
+}   

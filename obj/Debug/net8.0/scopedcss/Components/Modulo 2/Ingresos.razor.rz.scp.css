@@ -1,0 +1,100 @@
+/* Estilo general */
+body[b-b9p46b0squ] {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+/* Cabecera */
+h3[b-b9p46b0squ] {
+    color: #000000; /* Azul de la Digesett */
+    font-size: 2.5em;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+h4[b-b9p46b0squ] {
+    color: #000000;
+    margin-top: 20px;
+}
+
+/* Estilos del formulario */
+.form-group label[b-b9p46b0squ] {
+    color: #000000;
+    font-size: 1.1em;
+}
+
+.form-group select[b-b9p46b0squ], .form-group input[b-b9p46b0squ] {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #000000;
+    border-radius: 4px;
+    font-size: 1em;
+}
+
+.form-group select:focus[b-b9p46b0squ], .form-group input:focus[b-b9p46b0squ] {
+    border-color: #000000; /* Un azul más fuerte cuando está enfocado */
+    outline: none;
+}
+
+/* Botón */
+button.btn-primary[b-b9p46b0squ] {
+    background-color: #0058a0;
+    color: white;
+    font-size: 1.2em;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+
+button.btn-primary:hover[b-b9p46b0squ] {
+    background-color: #000000; /* Color más oscuro cuando pasa el mouse */
+}
+
+/* Tabla de reporte */
+.table[b-b9p46b0squ] {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+
+.table th[b-b9p46b0squ], .table td[b-b9p46b0squ] {
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #ddd;
+    font-size: 1.1em;
+}
+
+.table th[b-b9p46b0squ] {
+    background-color: #000e91;
+    color: white;
+}
+
+.table tr:nth-child(even)[b-b9p46b0squ] {
+    background-color: #f2f2f2;
+}
+
+.table tr:hover[b-b9p46b0squ] {
+    background-color: #e6f7ff;
+}
+
+/* Total cobrado */
+h5[b-b9p46b0squ] {
+    color: #000000;
+    font-size: 1.5em;
+    margin-top: 20px;
+    text-align: center;
+}
+
+/* Estilo de la página completa */
+.container[b-b9p46b0squ] {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
